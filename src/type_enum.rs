@@ -24,7 +24,7 @@ impl Type {
     pub fn get_type(&self) -> String {
         match self {
             Type::Int(_) => "i32".to_string(),
-            Type::Float(_) => "i64".to_string(),
+            Type::Float(_) => "f64".to_string(),
             Type::String(_) => "String".to_string(),
         }
     }
