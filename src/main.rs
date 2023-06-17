@@ -52,6 +52,14 @@ fn main() {
                     println!("{}: {} => {}", k, v.get_type(), v,)
                 }
             }
+            "help" => {
+                println!("help page:");
+                println!("Define a variable with the let keyword eg. let hallo = 2");
+                println!("Evaluate a term, space separated eg. ( 1 + hallo ) * 2");
+                println!("Quit the program with command q || quit");
+                println!("Print out all variables with command vars");
+                println!("Print this help page");
+            }
             _ => {
                 match eval(&args, &vars) {
                     Ok(res) => {
