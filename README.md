@@ -2,8 +2,10 @@
 ## A small CLI calculator shell
 
 This Calulator supports **Integer**, **Floats** and **Strings**
+Supported Operators are **+**, **-**, **\***, **/** and **%**
 
-**All keywords must be space separeted**
+
+## **All keywords must be space separeted**
 
 <font color="green">>>>5 + 2 * ( 5 + 3 )</font>  
 res: i32 = 21
@@ -11,7 +13,24 @@ res: i32 = 21
 <font color="red">>>>5 +2 * (5 + 3)</font>  
 Unknown operand +2
 
-<br>
+
+
+
+## Supported Operations
+| Type    | Type   | + | - | * | / | % |
+|---------|--------|---|---|---|---|---|
+| Int     | Int    |✔️ |✔️ |✔️|✔️ |✔️|
+| Int     | Float  |✔️ |✔️ |✔️|✔️ |✔️|
+| Int     | String |✔️ |❌ |✔️|❌ |❌|
+| Float   | Float  | ✔️|✔️ |✔️|✔️ |✔️|
+| Float   | Int    | ✔️|✔️ |✔️|✔️ |✔️|
+| Float   | String | ✔️|❌ |❌|❌ |❌|
+| String  | String | ✔️|❌ |❌|❌ |❌|
+| String  | Int    | ✔️|❌ |✔️|❌ |❌|
+| String  | Float  | ✔️|❌ |❌|❌ |❌|
+
+
+
 
 ## Examples
 
@@ -27,3 +46,8 @@ res: i32 = 361
 \>>>let hallo = hi  
 \>>>hallo * a  
 res: String = "hihihihihi"
+
+\>>>let foo = 7.5  
+\>>>let bar = 3.5  
+\>>>foo % bar  
+res: i64 = 0.5
