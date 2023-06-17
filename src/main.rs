@@ -90,7 +90,6 @@ fn eval(equation: &[&str], vars: &HashMap<String, Type>) -> Result<Type, String>
                 Type::Float(v) => s = format!("{}", v),
                 Type::String(v) => s = v.to_owned(),
             }
-            println!("{}", s);
         }
         if s == "(" {
             match equation.iter().position(|s| s == &")") {
