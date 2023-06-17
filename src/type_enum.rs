@@ -26,17 +26,6 @@ impl Type {
             Type::String(_) => "String".to_string(),
         }
     }
-
-    pub fn is_string(&self) -> bool {
-        matches!(self, Type::String(_))
-    }
-
-    pub fn is_i32(&self) -> bool {
-        matches!(self, Type::Int(_))
-    }
-    pub fn is_f64(&self) -> bool {
-        matches!(self, Type::Float(_))
-    }
 }
 
 impl fmt::Display for Type {
@@ -110,10 +99,34 @@ impl Div for Type {
 
     fn div(self, other: Self) -> Self::Output {
         match (self, other) {
-            (Type::Int(a), Type::Int(b)) => Ok(Type::Int(a / b)),
-            (Type::Int(a), Type::Float(b)) => Ok(Type::Float(a as f64 / b)),
-            (Type::Float(a), Type::Float(b)) => Ok(Type::Float(a / b)),
-            (Type::Float(a), Type::Int(b)) => Ok(Type::Float(a / b as f64)),
+            (Type::Int(a), Type::Int(b)) => {
+                if b == 0 {
+                    Err("Unable to divide by zero".to_string())
+                } else {
+                    Ok(Type::Int(a / b))
+                }
+            }
+            (Type::Int(a), Type::Float(b)) => {
+                if b == 0.0 {
+                    Err("Unable to divide by zero".to_string())
+                } else {
+                    Ok(Type::Float(a as f64 / b))
+                }
+            }
+            (Type::Float(a), Type::Float(b)) => {
+                if b == 0.0 {
+                    Err("Unable to divide by zero".to_string())
+                } else {
+                    Ok(Type::Float(a / b))
+                }
+            }
+            (Type::Float(a), Type::Int(b)) => {
+                if b == 0 {
+                    Err("Unable to divide by zero".to_string())
+                } else {
+                    Ok(Type::Float(a / b as f64))
+                }
+            }
             (a, b) => Err(format!(
                 "Unable to divide {} by {}",
                 a.get_type(),
@@ -128,10 +141,34 @@ impl Rem for Type {
 
     fn rem(self, other: Self) -> Self::Output {
         match (self, other) {
-            (Type::Int(a), Type::Int(b)) => Ok(Type::Int(a % b)),
-            (Type::Int(a), Type::Float(b)) => Ok(Type::Float(a as f64 % b)),
-            (Type::Float(a), Type::Float(b)) => Ok(Type::Float(a % b)),
-            (Type::Float(a), Type::Int(b)) => Ok(Type::Float(a % b as f64)),
+            (Type::Int(a), Type::Int(b)) => {
+                if b == 0 {
+                    Err("Unable to calculate the remainder with a divisor of zero".to_string())
+                } else {
+                    Ok(Type::Int(a % b))
+                }
+            }
+            (Type::Int(a), Type::Float(b)) => {
+                if b == 0.0 {
+                    Err("Unable to calculate the remainder with a divisor of zero".to_string())
+                } else {
+                    Ok(Type::Float(a as f64 % b))
+                }
+            }
+            (Type::Float(a), Type::Float(b)) => {
+                if b == 0.0 {
+                    Err("Unable to calculate the remainder with a divisor of zero".to_string())
+                } else {
+                    Ok(Type::Float(a % b))
+                }
+            }
+            (Type::Float(a), Type::Int(b)) => {
+                if b == 0 {
+                    Err("Unable to calculate the remainder with a divisor of zero".to_string())
+                } else {
+                    Ok(Type::Float(a % b as f64))
+                }
+            }
             (a, b) => Err(format!(
                 "Cannot perform modulo operation between {} and {}",
                 a.get_type(),

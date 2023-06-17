@@ -40,8 +40,6 @@ fn main() {
                         eprint!("{}", error);
                     }
                 }
-
-                continue;
             }
             "q" | "quit" => {
                 break;
@@ -60,18 +58,15 @@ fn main() {
                 println!("Print out all variables with command vars");
                 println!("Print this help page");
             }
-            _ => {
-                match eval(&args, &vars) {
-                    Ok(res) => {
-                        println!("res: {} = {}", res.get_type(), res);
-                        vars.insert("res".to_string(), res);
-                    }
-                    Err(error) => {
-                        eprintln!("{}", error);
-                    }
+            _ => match eval(&args, &vars) {
+                Ok(res) => {
+                    println!("res: {} = {}", res.get_type(), res);
+                    vars.insert("res".to_string(), res);
                 }
-                continue;
-            }
+                Err(error) => {
+                    eprintln!("{}", error);
+                }
+            },
         };
     }
 }
