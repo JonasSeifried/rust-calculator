@@ -85,7 +85,12 @@ fn eval(equation: &[&str], vars: &HashMap<String, Type>) -> Result<Type, String>
         }
         let mut s = String::from(*s);
         if vars.contains_key(&s) {
-            s = format!("{}", vars.get(&s).unwrap().clone());
+            match vars.get(&s).unwrap() {
+                Type::Int(v) => s = format!("{}", v),
+                Type::Float(v) => s = format!("{}", v),
+                Type::String(v) => s = v.to_owned(),
+            }
+            println!("{}", s);
         }
         if s == "(" {
             match equation.iter().position(|s| s == &")") {
@@ -106,7 +111,7 @@ fn eval(equation: &[&str], vars: &HashMap<String, Type>) -> Result<Type, String>
                 None => return Err("All parentheses have to be closed".to_string()),
             }
         } else if idx > 0 {
-            old_idx = idx - 1;
+            old_idx = idx;
         }
         if idx % 2 == 0 {
             if is_first {

@@ -14,8 +14,10 @@ impl Type {
             Type::Int(int_value)
         } else if let Ok(float_value) = value.replace(',', ".").parse::<f64>() {
             Type::Float(float_value)
+        } else if let Ok(string_value) = value.parse::<String>() {
+            Type::String(string_value)
         } else {
-            Type::String(value.to_string())
+            panic!("Can not create empty Type")
         }
     }
 
