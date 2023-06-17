@@ -50,4 +50,4 @@ res: String = "hihihihihi"
 \>>>let foo = 7.5  
 \>>>let bar = 3.5  
 \>>>foo % bar  
-res: i64 = 0.5
+res: f64 = 0.5
