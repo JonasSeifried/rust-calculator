@@ -1,148 +1,10 @@
 use std::collections::HashMap;
 
-use std::fmt;
 use std::io::{self, Write};
-use std::ops::{Add, Div, Mul, Rem, Sub};
 
-#[derive(Debug)]
-enum Type {
-    Int(i32),
-    Float(f64),
-    String(String),
-}
+use crate::type_enum::Type;
 
-impl Type {
-    pub fn from_string(value: &str) -> Self {
-        if let Ok(int_value) = value.parse::<i32>() {
-            Type::Int(int_value)
-        } else if let Ok(float_value) = value.replace(',', ".").parse::<f64>() {
-            Type::Float(float_value)
-        } else {
-            Type::String(value.to_string())
-        }
-    }
-
-    pub fn get_type(&self) -> String {
-        match self {
-            Type::Int(_) => "i32".to_string(),
-            Type::Float(_) => "i64".to_string(),
-            Type::String(_) => "String".to_string(),
-        }
-    }
-
-    pub fn is_string(&self) -> bool {
-        matches!(self, Type::String(_))
-    }
-
-    pub fn is_i32(&self) -> bool {
-        matches!(self, Type::Int(_))
-    }
-    pub fn is_f64(&self) -> bool {
-        matches!(self, Type::Float(_))
-    }
-}
-
-impl fmt::Display for Type {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        match self {
-            Type::Int(value) => write!(f, "{}", value),
-            Type::Float(value) => write!(f, "{}", value),
-            Type::String(value) => write!(f, "\"{}\"", value),
-        }
-    }
-}
-
-impl Add for Type {
-    type Output = Result<Type, String>;
-
-    fn add(self, other: Type) -> Self::Output {
-        match (self, other) {
-            (Type::Int(a), Type::Int(b)) => Ok(Type::Int(a + b)),
-            (Type::Int(a), Type::Float(b)) => Ok(Type::Float(a as f64 + b)),
-            (Type::Int(a), Type::String(b)) => Ok(Type::String(format!("{}{}", a, b))),
-            (Type::Float(a), Type::Float(b)) => Ok(Type::Float(a + b)),
-            (Type::Float(a), Type::Int(b)) => Ok(Type::Float(a + b as f64)),
-            (Type::Float(a), Type::String(b)) => Ok(Type::String(format!("{}{}", a, b))),
-            (Type::String(a), Type::String(b)) => Ok(Type::String(a + &b)),
-            (Type::String(a), Type::Int(b)) => Ok(Type::String(format!("{}{}", a, b))),
-            (Type::String(a), Type::Float(b)) => Ok(Type::String(format!("{}{}", a, b))),
-        }
-    }
-}
-
-impl Sub for Type {
-    type Output = Result<Type, String>;
-
-    fn sub(self, other: Self) -> Self::Output {
-        match (self, other) {
-            (Type::Int(a), Type::Int(b)) => Ok(Type::Int(a - b)),
-            (Type::Int(a), Type::Float(b)) => Ok(Type::Float(a as f64 - b)),
-            (Type::Float(a), Type::Float(b)) => Ok(Type::Float(a - b)),
-            (Type::Float(a), Type::Int(b)) => Ok(Type::Float(a - b as f64)),
-            (a, b) => Err(format!(
-                "Unable to substract {} from {}",
-                b.get_type(),
-                a.get_type()
-            )),
-        }
-    }
-}
-
-impl Mul for Type {
-    type Output = Result<Type, String>;
-
-    fn mul(self, other: Self) -> Self::Output {
-        match (self, other) {
-            (Type::Int(a), Type::Int(b)) => Ok(Type::Int(a * b)),
-            (Type::Int(a), Type::Float(b)) => Ok(Type::Float(a as f64 * b)),
-            (Type::Int(a), Type::String(b)) => Ok(Type::String(b.repeat(a as usize))),
-            (Type::Float(a), Type::Float(b)) => Ok(Type::Float(a * b)),
-            (Type::Float(a), Type::Int(b)) => Ok(Type::Float(a * b as f64)),
-            (Type::String(a), Type::Int(b)) => Ok(Type::String(a.repeat(b as usize))),
-            (a, b) => Err(format!(
-                "Unable to multiply {} with {}",
-                a.get_type(),
-                b.get_type()
-            )),
-        }
-    }
-}
-
-impl Div for Type {
-    type Output = Result<Type, String>;
-
-    fn div(self, other: Self) -> Self::Output {
-        match (self, other) {
-            (Type::Int(a), Type::Int(b)) => Ok(Type::Int(a / b)),
-            (Type::Int(a), Type::Float(b)) => Ok(Type::Float(a as f64 / b)),
-            (Type::Float(a), Type::Float(b)) => Ok(Type::Float(a / b)),
-            (Type::Float(a), Type::Int(b)) => Ok(Type::Float(a / b as f64)),
-            (a, b) => Err(format!(
-                "Unable to divide {} by {}",
-                a.get_type(),
-                b.get_type()
-            )),
-        }
-    }
-}
-
-impl Rem for Type {
-    type Output = Result<Type, String>;
-
-    fn rem(self, other: Self) -> Self::Output {
-        match (self, other) {
-            (Type::Int(a), Type::Int(b)) => Ok(Type::Int(a % b)),
-            (Type::Int(a), Type::Float(b)) => Ok(Type::Float(a as f64 % b)),
-            (Type::Float(a), Type::Float(b)) => Ok(Type::Float(a % b)),
-            (Type::Float(a), Type::Int(b)) => Ok(Type::Float(a % b as f64)),
-            (a, b) => Err(format!(
-                "Cannot perform modulo operation between {} and {}",
-                a.get_type(),
-                b.get_type()
-            )),
-        }
-    }
-}
+mod type_enum;
 
 fn main() {
     println!("Hello, world!");
@@ -170,7 +32,7 @@ fn main() {
                     continue;
                 }
 
-                match eval(&args[3..]) {
+                match eval(&args[3..], &vars) {
                     Ok(res) => {
                         vars.insert(args[1].to_string(), res);
                     }
@@ -178,15 +40,27 @@ fn main() {
                         eprint!("{}", error);
                     }
                 }
-                println!("{:?}", vars);
+
                 continue;
             }
-            wildcard => {
-                if vars.contains_key(wildcard) {
-                    let value = vars.get(wildcard).unwrap();
-                    println!("{}: {} = {}", wildcard, value.get_type(), value);
-                } else {
-                    println!("unknown keyword {}", args[0]);
+            "q" | "quit" => {
+                break;
+            }
+            "vars" => {
+                println!("Variables:");
+                for (k, v) in &vars {
+                    println!("{}: {} => {}", k, v.get_type(), v,)
+                }
+            }
+            _ => {
+                match eval(&args, &vars) {
+                    Ok(res) => {
+                        println!("res: {} = {}", res.get_type(), res);
+                        vars.insert("res".to_string(), res);
+                    }
+                    Err(error) => {
+                        eprint!("{}", error);
+                    }
                 }
                 continue;
             }
@@ -194,31 +68,122 @@ fn main() {
     }
 }
 
-fn eval(equation: &[&str]) -> Result<Type, String> {
+fn eval(equation: &[&str], vars: &HashMap<String, Type>) -> Result<Type, String> {
+    let length = equation.len();
     let mut value: Option<Type> = None;
-    let mut operand: &str = "";
+    let mut operand = String::new();
     let mut is_first = true;
-    for (idx, s) in equation.iter().enumerate() {
+    let mut skip = 0;
+    let mut old_idx = 0;
+    for (mut idx, s) in equation.iter().enumerate() {
+        if skip > 0 {
+            skip -= 1;
+            continue;
+        }
+        let mut s = String::from(*s);
+        if vars.contains_key(&s) {
+            s = format!("{}", vars.get(&s).unwrap().clone());
+        }
+        if s == "(" {
+            match equation.iter().position(|s| s == &")") {
+                Some(i) => match eval(&equation[idx + 1..i], vars) {
+                    Ok(res) => {
+                        skip = i - idx;
+                        old_idx = idx;
+                        idx = i;
+                        if is_first {
+                            value = Some(res);
+                            is_first = false;
+                            continue;
+                        }
+                        s = format!("{}", res);
+                    }
+                    Err(error) => return Err(error),
+                },
+                None => return Err("All parentheses have to be closed".to_string()),
+            }
+        } else if idx > 0 {
+            old_idx = idx - 1;
+        }
         if idx % 2 == 0 {
             if is_first {
-                value = Some(Type::from_string(s));
                 is_first = false;
+                value = Some(Type::from_string(&s));
                 continue;
             }
-            match operand {
+
+            match operand.as_str() {
                 "+" => {
+                    if idx + 1 != length && (equation[idx + 1] == "*" || equation[idx + 1] == "/") {
+                        value = match value {
+                            Some(v) => match eval(&equation[old_idx..], vars) {
+                                Ok(res) => match v + res {
+                                    Ok(rv) => return Ok(rv),
+                                    Err(error) => return Err(error),
+                                },
+                                Err(error) => return Err(error),
+                            },
+                            None => None,
+                        };
+                        continue;
+                    }
                     value = match value {
-                        Some(v) => match v + Type::from_string(s) {
+                        Some(v) => match v + Type::from_string(&s) {
                             Ok(rv) => Some(rv),
                             Err(error) => return Err(error),
                         },
                         None => None,
                     }
                 }
-                "-" => (),
-                "*" => (),
-                "/" => (),
-                "%" => (),
+                "-" => {
+                    if idx + 1 != length && (equation[idx + 1] == "*" || equation[idx + 1] == "/") {
+                        value = match value {
+                            Some(v) => match eval(&equation[idx..], vars) {
+                                Ok(res) => match v - res {
+                                    Ok(rv) => return Ok(rv),
+                                    Err(error) => return Err(error),
+                                },
+                                Err(error) => return Err(error),
+                            },
+                            None => None,
+                        };
+                        continue;
+                    }
+                    value = match value {
+                        Some(v) => match v - Type::from_string(&s) {
+                            Ok(rv) => Some(rv),
+                            Err(error) => return Err(error),
+                        },
+                        None => None,
+                    }
+                }
+                "*" => {
+                    value = match value {
+                        Some(v) => match v * Type::from_string(&s) {
+                            Ok(rv) => Some(rv),
+                            Err(error) => return Err(error),
+                        },
+                        None => None,
+                    }
+                }
+                "/" => {
+                    value = match value {
+                        Some(v) => match v / Type::from_string(&s) {
+                            Ok(rv) => Some(rv),
+                            Err(error) => return Err(error),
+                        },
+                        None => None,
+                    }
+                }
+                "%" => {
+                    value = match value {
+                        Some(v) => match v % Type::from_string(&s) {
+                            Ok(rv) => Some(rv),
+                            Err(error) => return Err(error),
+                        },
+                        None => None,
+                    }
+                }
                 op => return Err(format!("Unknown operand {}", op)),
             }
             continue;
