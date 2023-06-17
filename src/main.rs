@@ -67,7 +67,7 @@ fn main() {
                         vars.insert("res".to_string(), res);
                     }
                     Err(error) => {
-                        eprint!("{}", error);
+                        eprintln!("{}", error);
                     }
                 }
                 continue;
