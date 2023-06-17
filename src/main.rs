@@ -7,7 +7,7 @@ use crate::type_enum::Type;
 mod type_enum;
 
 fn main() {
-    println!("Hello, world!");
+    println!("run help for instructions");
     let mut vars: HashMap<String, Type> = HashMap::new();
 
     loop {
