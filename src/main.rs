@@ -92,7 +92,7 @@ fn eval(equation: &[&str], vars: &HashMap<String, Type>) -> Result<Type, String>
             }
         }
         if s == "(" {
-            match equation.iter().position(|s| s == &")") {
+            match equation.iter().rposition(|s| s == &")") {
                 Some(i) => match eval(&equation[idx + 1..i], vars) {
                     Ok(res) => {
                         skip = i - idx;
