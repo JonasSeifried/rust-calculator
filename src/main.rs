@@ -91,8 +91,7 @@ fn main() {
 fn eval(equation: &str, vars: &HashMap<String, Type>) -> Result<Type, String> {
     let mut word = String::new();
     let mut operand: char = '\0';
-    let mut res: Result<Type, String> =
-        Err("Unexpected Error: This should be unreachable".to_string());
+    let mut res: Result<Type, String> = Err("Error: Empty equation".to_string());
     let mut open_parentheses = 0;
     let mut idx_of_parentheses: usize = 0;
     let mut word_start_idx = 0;
@@ -105,12 +104,14 @@ fn eval(equation: &str, vars: &HashMap<String, Type>) -> Result<Type, String> {
                 ')' => {
                     open_parentheses -= 1;
                     if open_parentheses == 0 {
+                        op_expected = true;
                         if is_first {
                             if idx - idx_of_parentheses == 1 {
-                                return Err("Error: Empty equation".to_string());
+                                continue;
                             }
                             res = eval(&equation[idx_of_parentheses + 1..idx], vars);
                             is_first = false;
+
                             continue;
                         }
                         if idx - idx_of_parentheses == 1 {
@@ -131,7 +132,6 @@ fn eval(equation: &str, vars: &HashMap<String, Type>) -> Result<Type, String> {
                                 ))
                             }
                         };
-                        op_expected = true;
                         continue;
                     }
                 }
@@ -199,12 +199,12 @@ fn eval(equation: &str, vars: &HashMap<String, Type>) -> Result<Type, String> {
     if !word.is_empty() {
         let result = var_or_string(&word, vars);
         res = match res {
-            Ok(_) => match operand {
-                '+' => res? + result,
-                '-' => res? - result,
-                '*' => res? * result,
-                '/' => res? / result,
-                '%' => res? % result,
+            Ok(res) => match operand {
+                '+' => res + result,
+                '-' => res - result,
+                '*' => res * result,
+                '/' => res / result,
+                '%' => res % result,
                 _ => {
                     return Err(format!(
                         "Unexpected Error: {} is not an valid operator",
