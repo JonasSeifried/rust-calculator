@@ -33,26 +33,27 @@ fn main() {
         }
         match args[0] {
             "let" => {
-                if args.len() <= 3 || args[2] != "=" {
-                    println!("wrong usage of the let keyword");
+                let s = args[1..].join("");
+                if !s.contains('=') {
+                    eprintln!("command is missing '='");
                     continue;
                 }
-                if args[1].chars().next().unwrap().is_numeric() {
-                    eprintln!("Variables cannot start with number");
+                let parts: Vec<&str> = s.split('=').collect();
+
+                if parts.len() != 2 {
+                    eprintln!("wrong usage of the let keyword");
                     continue;
                 }
-                let (ivv, bad_char) = is_valid_var(args[1].trim());
-                if !ivv {
-                    eprintln!(
-                        "Variables must be alphanumeric! '{}' is not allowed",
-                        bad_char
-                    );
+                let var_name = parts[0];
+                let equation = parts[1];
+                if let Err(err) = is_valid_var(var_name) {
+                    eprintln!("{}", err);
                     continue;
                 }
 
-                match eval(&args[3..].join(""), &vars) {
+                match eval(equation, &vars) {
                     Ok(res) => {
-                        vars.insert(args[1].to_string(), res);
+                        vars.insert(var_name.to_string(), res);
                     }
                     Err(error) => {
                         eprintln!("{}", error);
@@ -68,14 +69,8 @@ fn main() {
                     println!("{}: {} => {}", k, v.get_type(), v,)
                 }
             }
-            "help" => {
-                println!("help page:");
-                println!("Define a variable with the let keyword eg. let hallo = 2");
-                println!("Evaluate a term, space separated eg. ( 1 + hallo ) * 2");
-                println!("Quit the program with command q || quit");
-                println!("Print out all variables with command vars");
-                println!("Print this help page");
-            }
+            "help" => println!("{}", help_string()),
+
             _ => match eval(&args.join(""), &vars) {
                 Ok(res) => {
                     println!("res: {} = {}", res.get_type(), res);
@@ -226,11 +221,27 @@ fn var_or_string(s: &str, vars: &HashMap<String, Type>) -> Type {
     vars.get(s).unwrap_or(&Type::from_string(s)).clone()
 }
 
-fn is_valid_var(s: &str) -> (bool, char) {
+fn is_valid_var(s: &str) -> Result<(), String> {
+    if s.chars().next().unwrap().is_numeric() {
+        return Err("Variables cannot start with number".to_string());
+    }
     for c in s.chars() {
         if !c.is_alphanumeric() && c != '_' {
-            return (false, c);
+            return Err(format!(
+                "Variables must be alphanumeric! '{}' is not allowed",
+                c,
+            ));
         }
     }
-    (true, '\0')
+    Ok(())
+}
+
+fn help_string() -> String {
+    "help page:
+    Define a variable with the let keyword eg. let hallo = 2
+    Evaluate a term, space separated eg. ( 1 + hallo ) * 2
+    Quit the program with command q || quit
+    Print out all variables with command vars
+    Print this help page"
+        .to_string()
 }
