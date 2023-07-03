@@ -9,7 +9,17 @@ pub enum Type {
 }
 
 impl Type {
-    pub fn from_string(value: &str) -> Self {
+    pub fn get_type(&self) -> String {
+        match self {
+            Type::Int(_) => "i32".to_string(),
+            Type::Float(_) => "f64".to_string(),
+            Type::String(_) => "String".to_string(),
+        }
+    }
+}
+
+impl From<&str> for Type {
+    fn from(value: &str) -> Self {
         if let Ok(int_value) = value.parse::<i32>() {
             Type::Int(int_value)
         } else if let Ok(float_value) = value.replace(',', ".").parse::<f64>() {
@@ -18,14 +28,6 @@ impl Type {
             Type::String(string_value)
         } else {
             panic!("Can not create empty Type")
-        }
-    }
-
-    pub fn get_type(&self) -> String {
-        match self {
-            Type::Int(_) => "i32".to_string(),
-            Type::Float(_) => "f64".to_string(),
-            Type::String(_) => "String".to_string(),
         }
     }
 }
