@@ -1,7 +1,7 @@
 use std::fmt;
 use std::ops::{Add, Div, Mul, Rem, Sub};
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, PartialOrd)]
 pub enum Type {
     Int(i32),
     Float(f64),
@@ -24,10 +24,8 @@ impl From<&str> for Type {
             Type::Int(int_value)
         } else if let Ok(float_value) = value.replace(',', ".").parse::<f64>() {
             Type::Float(float_value)
-        } else if let Ok(string_value) = value.parse::<String>() {
-            Type::String(string_value)
         } else {
-            panic!("Can not create empty Type")
+            Type::String(value.to_string())
         }
     }
 }
@@ -179,5 +177,44 @@ impl Rem for Type {
                 b.get_type()
             )),
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+
+    use super::*;
+    #[test]
+    fn parse_int() -> Result<(), String> {
+        let s = "12";
+        if let Type::Int(val) = Type::from(s) {
+            if val == 12 {
+                return Ok(());
+            }
+            return Err(format!("Error parsing {s} as an integer, value changed"));
+        }
+        Err(format!("Couldn't parse {s} as an integer"))
+    }
+    #[test]
+    fn parse_float_dot() -> Result<(), String> {
+        let s = "1.2";
+        if let Type::Float(val) = Type::from(s) {
+            if val == 1.2 {
+                return Ok(());
+            }
+            return Err(format!("Error parsing {s} as a float, value changed"));
+        }
+        Err(format!("Couldn't parse {s} as a float"))
+    }
+    #[test]
+    fn parse_float_comma() -> Result<(), String> {
+        let s = "1,2";
+        if let Type::Float(val) = Type::from(s) {
+            if val == 1.2 {
+                return Ok(());
+            }
+            return Err(format!("Error parsing {s} as a float, value changed"));
+        }
+        Err(format!("Couldn't parse {s} as a float"))
     }
 }
