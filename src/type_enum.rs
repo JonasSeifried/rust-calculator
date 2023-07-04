@@ -1,10 +1,14 @@
 use std::fmt;
 use std::ops::{Add, Div, Mul, Rem, Sub};
 
+/// Represents different types that can be used in mathematical operations.
 #[derive(Debug, Clone, PartialEq, PartialOrd)]
 pub enum Type {
+    /// Represents a 32-bit signed integer.
     Int(i32),
+    /// Represents a 64-bit floating-point number.
     Float(f64),
+    /// Represents a String.
     String(String),
 }
 

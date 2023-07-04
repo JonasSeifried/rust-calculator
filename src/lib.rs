@@ -1,4 +1,4 @@
-#![warn(missing_docs)]
+#![deny(missing_docs)]
 
 //! Library for evaluating mathematical equations.
 //!
@@ -22,7 +22,7 @@
 //! let result = eval(equation, Some(&variables));
 //!
 //! assert_eq!(result, Type::from("87.14"));
-//! }
+//!
 //! ```
 //!
 //! # Notes
@@ -98,6 +98,14 @@
 use std::collections::HashMap;
 use type_enum::Type;
 
+/// Defines the `Type` enum for representing different types in the calculator library.
+///
+/// The `Type` enum supports three variants:
+/// - `Int` for integer values (`i32`)
+/// - `Float` for floating-point values (`f64`)
+/// - `String` for string values (`String`)
+///
+///
 pub mod type_enum;
 
 /// Initializes an empty `HashMap` to store variables and their corresponding values as instances of ´Type´.
