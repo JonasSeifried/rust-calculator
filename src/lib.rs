@@ -1,3 +1,100 @@
+#![warn(missing_docs)]
+
+//! Library for evaluating mathematical equations.
+//!
+//! This library was created for learning purposes and provides functionality for evaluating mathematical equations.
+//! It supports basic arithmetic operations and variable substitution.
+//!
+//! # Example
+//!
+//! ```
+//! use std::collections::HashMap;
+//! use calculator::{eval, vars_init, type_enum::Type};
+//!
+//! let mut variables = vars_init();
+//!
+//! // Inserting variables into the HashMap
+//! variables.insert("x".to_string(), Type::Int(42));
+//! variables.insert("y".to_string(), Type::Float(3.14));
+//!
+//! // Using the `eval` function to evaluate an equation
+//! let equation = "2 * x + y";
+//! let result = eval(equation, Some(&variables));
+//!
+//! assert_eq!(result, Type::from("87.14"));
+//! }
+//! ```
+//!
+//! # Notes
+//!
+//! This library supports the following arithmetic operations: addition (`+`), subtraction (`-`), multiplication (`*`), division (`/`), and modulo (`%`).
+//! It also supports parentheses to control the order of operations.
+//! The `eval` function can be used to evaluate equations containing variables. Variable names should be stored in a `HashMap` with their corresponding values as instances of the `Type` enum.
+//!
+//! Make sure to check the documentation of the `eval` function and the `Type` enum for more details.
+//!
+//! ## Features
+//!
+//! * Arithmetic operations: `+`, `-`, `*`, `/`, `%`
+//! * Parentheses for grouping subexpressions
+//! * Variable substitution
+//!
+//! ## Limitations
+//!
+//! * Supports integer (`i32`), float (`f64`), and string (`String`) types only
+//! * Limited mathematical functionality
+//!
+//! # Getting Started
+//!
+//! To use the calculator library, add the following dependency to your `Cargo.toml` file:
+//!
+//! ```toml
+//! [dependencies]
+//! calculator = "0.1.0"
+//! ```
+//!
+//! # Examples
+//!
+//! ## Evaluating an equation without variables
+//!
+//! ```rust
+//! use calculator::eval;
+//!
+//! let equation = "2 * (3 + 4)";
+//! let result = eval(equation, None);
+//!
+//! assert_eq!(result, Type::from("14"));
+//! ```
+//!
+//! ## Evaluating an equation with variables
+//!
+//! ```rust
+//! use std::collections::HashMap;
+//! use calculator::{eval, vars_init, type_enum::Type};
+//!
+//! let mut variables = vars_init();
+//!
+//! // Inserting variables into the HashMap
+//! variables.insert("x".to_string(), Type::Int(42));
+//! variables.insert("y".to_string(), Type::Float(3.14));
+//!
+//! // Using the HashMap to evaluate an equation with variables
+//! let equation = "2 * x + y";
+//! let result = eval(equation, Some(&variables));
+//!
+//! assert_eq!(result, Type::from("87.14"));
+//! ```
+//!
+//! # Contributing
+//!
+//! Contributions to the calculator library are welcome! If you find any issues or have suggestions for improvements, please open an issue or submit a pull request on the [GitHub repository](https://github.com/your_username/calculator).
+//!
+//! Please ensure that your code follows the established coding style and conventions, and includes appropriate tests and documentation.
+//!
+//! # License
+//!
+//! This library is licensed under the MIT License.
+
 use std::collections::HashMap;
 use type_enum::Type;
 
