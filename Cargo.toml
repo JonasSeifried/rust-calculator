@@ -4,7 +4,9 @@ version = "0.1.0"
 authors = ["Jonas Seifried"]
 edition = "2021"
 description = "A little library for evaluating mathematical expressions"
-license-file = "LICENSE"
+documentation = "https://docs.rs/my-little-eval"
+repository = "https://github.com/JonasSeifried/rust-calculator"
+license = "MIT"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
