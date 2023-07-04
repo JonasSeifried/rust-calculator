@@ -9,11 +9,37 @@ pub enum Type {
 }
 
 impl Type {
-    pub fn get_type(&self) -> String {
+    /// Returns the type information associated with the variant of the `Type` enum.
+    ///
+    /// # Arguments
+    ///
+    /// * `self` - A reference to the `Type` enum instance.
+    ///
+    /// # Returns
+    ///
+    /// A string slice representing the type of the enum variant:
+    /// * If the variant is `Type::Int`, the return value is "i32" representing a 32-bit signed integer type.
+    /// * If the variant is `Type::Float`, the return value is "f64" representing a 64-bit floating-point type.
+    /// * If the variant is `Type::String`, the return value is "String" indicating a string type.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use calculator::type_enum::Type;
+    ///
+    /// let int_type = Type::Int(42);
+    /// let float_type = Type::Float(3.14);
+    /// let string_type = Type::String("Hello, World!".to_string());
+    ///
+    /// assert_eq!(int_type.get_type(), "i32");
+    /// assert_eq!(float_type.get_type(), "f64");
+    /// assert_eq!(string_type.get_type(), "String");
+    /// ```
+    pub fn get_type(&self) -> &str {
         match self {
-            Type::Int(_) => "i32".to_string(),
-            Type::Float(_) => "f64".to_string(),
-            Type::String(_) => "String".to_string(),
+            Type::Int(_) => "i32",
+            Type::Float(_) => "f64",
+            Type::String(_) => "String",
         }
     }
 }
