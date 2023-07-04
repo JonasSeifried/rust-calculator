@@ -13,9 +13,10 @@ My Little Eval is a lightweight Rust library for evaluating mathematical express
 - Supported [Types](https://docs.rs/my-little-eval/latest/my_little_eval/type_enum/enum.Type.html) integer (`i32`), float (`f64`) and strings (`String`)
 - Support for basic arithmetic operations (`+`, `-`, `*`, `/`, `%`)
 - **Parentheses** for controlling operator precedence
-- **Variable** substitution  
-<br>
+- `Variable` substitution  
+
 ### Supported Operations
+
 | Type    | Type   | + | - | * | / | % |
 |---------|--------|---|---|---|---|---|
 | Int     | Int    |✔️ |✔️ |✔️|✔️ |✔️|
