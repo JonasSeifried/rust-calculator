@@ -2,7 +2,7 @@ use std::io::{self, Write};
 
 fn main() {
     println!("run help for instructions");
-    let mut vars = calculator::var_init();
+    let mut vars = calculator::vars_init();
 
     loop {
         let mut input = String::new();

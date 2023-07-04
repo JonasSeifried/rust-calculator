@@ -3,35 +3,104 @@ use type_enum::Type;
 
 pub mod type_enum;
 
-pub fn var_init() -> HashMap<String, Type> {
+/// Initializes an empty `HashMap` to store variables and their corresponding values as instances of ´Type´.
+///
+/// # Returns
+///
+/// A newly created `HashMap` that can be used to store variables and their values (`Type`).
+///
+/// # Example
+///
+/// ```
+/// use std::collections::HashMap;
+/// use calculator::{vars_init, eval, type_enum::Type};
+///
+/// let mut variables = vars_init();
+///
+/// // Inserting variables into the HashMap
+/// variables.insert("x".to_string(), Type::Int(42));
+/// variables.insert("y".to_string(), Type::Float(3.14));
+///
+/// // Using the HashMap to evaluate an equation with variables
+/// let equation = "2 * x + y";
+/// let result = eval(equation, Some(&variables));
+///
+/// match result {
+///     Ok(value) => println!("Result: {}", value),
+///     Err(error) => println!("Error: {}", error),
+/// }
+/// ```
+///
+/// # Notes
+///
+/// This function creates an empty `HashMap` that can be used to store variables and their corresponding values.
+/// The `HashMap` should have variable names as keys (`String`) and their corresponding values (`Type`).
+/// The `Type` enum can represent different types such as integers, floats, or strings.
+/// The resulting `HashMap` can be used as input to the `eval` function for evaluating equations containing variables.
+
+pub fn vars_init() -> HashMap<String, Type> {
     HashMap::new()
 }
+/// Evaluates a mathematical equation represented as a string and returns the result.
+///
+/// # Arguments
+///
+/// * `equation` - A string containing the mathematical equation to evaluate.
+/// * `vars` - An optional reference to a `HashMap` of variable names and their corresponding values (`Type`).
+///
+/// # Returns
+///
+/// A `Result` representing the evaluated result of the equation:
+/// * If the evaluation is successful, the `Result` contains a `Type` representing the result of the equation.
+/// * If an error occurs during evaluation, the `Result` contains a `String` with an error message.
+///
+/// # Example
+///
+/// ```
+/// use std::collections::HashMap;
+/// use calculator::{eval, vars_init, type_enum::Type};
+///
+/// let mut variables = vars_init();
+/// let equation = "2 * (3 + 4)";
+/// let result = eval(equation, None).unwrap();
+///
+/// variables.insert(String::from("a"), result.clone());
+/// let equation2 = "a * 2";
+/// let result2 = eval(equation2, Some(&variables)).unwrap();
+///
+/// assert_eq!(result, Type::from("14"));
+/// assert_eq!(result2, Type::from("28"));
+///
+/// ```
+///
+/// # Notes
+///
+/// This function evaluates equations containing basic arithmetic operators: `+`, `-`, `*`, `/`, and `%`.
+/// It supports parentheses to control the order of operations.
+/// The `vars` argument allows for the evaluation of equations with variables.
+/// If variables are provided, they should be stored in a `HashMap` with variable names as keys and their corresponding values as instances of `Type`.
 
 pub fn eval(equation: &str, vars: Option<&HashMap<String, Type>>) -> Result<Type, String> {
-    let mut word = String::new();
-    let mut right: Option<Type> = None;
-    let mut operand: char = '\0';
-    let mut res: Result<Type, String> = Err("Error: Empty equation".to_string());
-    let mut open_parentheses = 0;
+    let mut operand_builder = String::new();
+    let mut operand_right: Option<Type> = None;
+    let mut operator: char = '\0';
+    let mut operand_left: Result<Type, String> = Err("Error: Empty equation".to_string());
+    let mut open_parentheses_count = 0;
     let mut idx_of_parentheses: usize = 0;
-    let mut is_first = true;
-    let mut op_expected = false;
+    let mut is_first_operand = true;
+    let mut operator_expected = false;
     for (idx, c) in equation.chars().enumerate() {
-        if open_parentheses != 0 {
+        if open_parentheses_count != 0 {
             match c {
-                '(' => open_parentheses += 1,
+                '(' => open_parentheses_count += 1,
                 ')' => {
-                    open_parentheses -= 1;
-                    if open_parentheses == 0 {
+                    open_parentheses_count -= 1;
+                    if open_parentheses_count == 0 {
                         if idx - idx_of_parentheses == 1 {
                             continue;
                         }
-                        op_expected = true;
-                        /*let r = eval(&equation[idx_of_parentheses + 1..idx], vars)?;
-                        res = handle_op(res, r, operand, is_first);
-                        is_first = false;
-                        */
-                        right = Some(eval(&equation[idx_of_parentheses + 1..idx], vars)?);
+                        operator_expected = true;
+                        operand_right = Some(eval(&equation[idx_of_parentheses + 1..idx], vars)?);
 
                         continue;
                     }
@@ -43,88 +112,105 @@ pub fn eval(equation: &str, vars: Option<&HashMap<String, Type>>) -> Result<Type
 
         match c {
             '+' | '-' | '*' | '/' | '%' => {
-                if !op_expected {
+                if !operator_expected {
                     if c == '-' {
-                        word.push(c);
+                        operand_builder.push(c);
                         continue;
                     }
-                    return Err(format!("{} can't be followed by {}", operand, c));
+                    return Err(format!("{} can't be followed by {}", operator, c));
                 }
 
-                if !word.is_empty() {
-                    right = Some(var_or_string(&word, vars));
-                    word.clear();
+                if !operand_builder.is_empty() {
+                    operand_right = Some(var_or_string(&operand_builder, vars));
+                    operand_builder.clear();
                 }
 
                 //correct order of operation e.g. * before +
-                let order_of_op = c != '+' && c != '-' && (operand == '+' || operand == '-');
+                let order_of_op = c != '+' && c != '-' && (operator == '+' || operator == '-');
                 if order_of_op {
                     return handle_op(
-                        res,
+                        operand_left,
                         eval(
-                            &format!("{}{}{}", right.unwrap(), c, equation[idx + 1..].to_owned()),
+                            &format!(
+                                "{}{}{}",
+                                operand_right.unwrap(),
+                                c,
+                                equation[idx + 1..].to_owned()
+                            ),
                             vars,
                         )?,
-                        operand,
-                        is_first,
+                        operator,
+                        is_first_operand,
                     );
                 }
-                op_expected = false;
+                operator_expected = false;
 
-                if let Some(r) = right.clone() {
-                    res = handle_op(res, r, operand, is_first);
-                    is_first = false;
+                if let Some(r) = operand_right.clone() {
+                    operand_left = handle_op(operand_left, r, operator, is_first_operand);
+                    is_first_operand = false;
                 }
-                operand = c;
+                operator = c;
                 continue;
             }
             '(' => {
-                open_parentheses += 1;
+                open_parentheses_count += 1;
                 idx_of_parentheses = idx;
             }
-            ')' => return Err("parentheses must be opened before being closed".to_string()),
+            ')' => {
+                return Err(String::from(
+                    "parentheses must be opened before being closed",
+                ))
+            }
             ' ' => (),
             _ => {
-                word.push(c);
-                op_expected = true;
+                operand_builder.push(c);
+                operator_expected = true;
             }
         }
     }
-    if !word.is_empty() {
-        if word == "-" {
-            word = "-1".to_string();
-            operand = '*';
+    if !operand_builder.is_empty() {
+        if operand_builder == "-" {
+            operand_builder = String::from("-1");
+            operator = '*';
         }
-        right = Some(var_or_string(&word, vars));
+        operand_right = Some(var_or_string(&operand_builder, vars));
     }
-    if let Some(r) = right {
-        res = handle_op(res, r, operand, is_first);
+    if let Some(r) = operand_right {
+        operand_left = handle_op(operand_left, r, operator, is_first_operand);
     }
 
-    if open_parentheses != 0 {
+    if open_parentheses_count != 0 {
         return Err("All parentheses must be closed!".to_string());
     }
-    res
+    operand_left
 }
 
-fn handle_op(l: Result<Type, String>, r: Type, op: char, is_first: bool) -> Result<Type, String> {
-    if is_first {
-        return Ok(r);
+fn handle_op(
+    operand_left: Result<Type, String>,
+    operand_right: Type,
+    operator: char,
+    is_first_operand: bool,
+) -> Result<Type, String> {
+    if is_first_operand {
+        return Ok(operand_right);
     }
-    match op {
-        '+' => l? + r,
-        '-' => l? - r,
-        '*' => l? * r,
-        '/' => l? / r,
-        '%' => l? % r,
-        _ => Err(format!("Unexpected Error: {} is not an valid operator", op)),
+    match operator {
+        '+' => operand_left? + operand_right,
+        '-' => operand_left? - operand_right,
+        '*' => operand_left? * operand_right,
+        '/' => operand_left? / operand_right,
+        '%' => operand_left? % operand_right,
+        _ => Err(format!(
+            "Unexpected Error: {} is not an valid operator",
+            operator
+        )),
     }
 }
 
-fn var_or_string(s: &str, vars: Option<&HashMap<String, Type>>) -> Type {
+fn var_or_string(operand: &str, vars: Option<&HashMap<String, Type>>) -> Type {
     match vars {
-        Some(vars) => vars.get(s).unwrap_or(&Type::from(s)).clone(),
-        None => Type::from(s),
+        Some(vars) => vars.get(operand).unwrap_or(&Type::from(operand)).clone(),
+        None => Type::from(operand),
     }
 }
 
