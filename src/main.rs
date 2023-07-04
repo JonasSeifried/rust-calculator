@@ -2,7 +2,7 @@ use std::io::{self, Write};
 
 fn main() {
     println!("run help for instructions");
-    let mut vars = calculator::vars_init();
+    let mut vars = my_little_eval::vars_init();
 
     loop {
         let mut input = String::new();
@@ -45,7 +45,7 @@ fn main() {
                     continue;
                 }
 
-                match calculator::eval(equation, Some(&vars)) {
+                match my_little_eval::eval(equation, Some(&vars)) {
                     Ok(res) => {
                         vars.insert(var_name.to_string(), res);
                     }
@@ -65,7 +65,7 @@ fn main() {
             }
             "help" => println!("{}", help_string()),
 
-            _ => match calculator::eval(&args.join(""), Some(&vars)) {
+            _ => match my_little_eval::eval(&args.join(""), Some(&vars)) {
                 Ok(res) => {
                     println!("res: {} = {}", res.get_type(), res);
                     vars.insert("res".to_string(), res);

@@ -9,7 +9,7 @@
 //!
 //! ```
 //! use std::collections::HashMap;
-//! use calculator::{eval, vars_init, type_enum::Type};
+//! use my_little_eval::{eval, vars_init, type_enum::Type};
 //!
 //! let mut variables = vars_init();
 //!
@@ -21,7 +21,7 @@
 //! let equation = "2 * x + y";
 //! let result = eval(equation, Some(&variables));
 //!
-//! assert_eq!(result, Type::from("87.14"));
+//! assert_eq!(result, Ok(Type::from("87.14")));
 //!
 //! ```
 //!
@@ -46,11 +46,11 @@
 //!
 //! # Getting Started
 //!
-//! To use the calculator library, add the following dependency to your `Cargo.toml` file:
+//! To use the my-little-eval library, add the following dependency to your `Cargo.toml` file:
 //!
 //! ```toml
 //! [dependencies]
-//! calculator = "0.1.0"
+//! my-little-eval = "0.1.0"
 //! ```
 //!
 //! # Examples
@@ -58,19 +58,19 @@
 //! ## Evaluating an equation without variables
 //!
 //! ```rust
-//! use calculator::eval;
+//! use my_little_eval::{eval, type_enum::Type};
 //!
 //! let equation = "2 * (3 + 4)";
 //! let result = eval(equation, None);
 //!
-//! assert_eq!(result, Type::from("14"));
+//! assert_eq!(result, Ok(Type::from("14")));
 //! ```
 //!
 //! ## Evaluating an equation with variables
 //!
 //! ```rust
 //! use std::collections::HashMap;
-//! use calculator::{eval, vars_init, type_enum::Type};
+//! use my_little_eval::{eval, vars_init, type_enum::Type};
 //!
 //! let mut variables = vars_init();
 //!
@@ -82,12 +82,12 @@
 //! let equation = "2 * x + y";
 //! let result = eval(equation, Some(&variables));
 //!
-//! assert_eq!(result, Type::from("87.14"));
+//! assert_eq!(result, Ok(Type::from("87.14")));
 //! ```
 //!
 //! # Contributing
 //!
-//! Contributions to the calculator library are welcome! If you find any issues or have suggestions for improvements, please open an issue or submit a pull request on the [GitHub repository](https://github.com/your_username/calculator).
+//! Contributions to the my-little-eval library are welcome! If you find any issues or have suggestions for improvements, please open an issue or submit a pull request on the [GitHub repository](https://github.com/JonasSeifried/rust-calculator).
 //!
 //! Please ensure that your code follows the established coding style and conventions, and includes appropriate tests and documentation.
 //!
@@ -98,7 +98,7 @@
 use std::collections::HashMap;
 use type_enum::Type;
 
-/// Defines the `Type` enum for representing different types in the calculator library.
+/// Defines the `Type` enum for representing different types in the my-little-eval library.
 ///
 /// The `Type` enum supports three variants:
 /// - `Int` for integer values (`i32`)
@@ -118,7 +118,7 @@ pub mod type_enum;
 ///
 /// ```
 /// use std::collections::HashMap;
-/// use calculator::{vars_init, eval, type_enum::Type};
+/// use my_little_eval::{vars_init, eval, type_enum::Type};
 ///
 /// let mut variables = vars_init();
 ///
@@ -163,7 +163,7 @@ pub fn vars_init() -> HashMap<String, Type> {
 ///
 /// ```
 /// use std::collections::HashMap;
-/// use calculator::{eval, vars_init, type_enum::Type};
+/// use my_little_eval::{eval, vars_init, type_enum::Type};
 ///
 /// let mut variables = vars_init();
 /// let equation = "2 * (3 + 4)";

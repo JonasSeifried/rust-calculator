@@ -3,5 +3,5 @@
 version = 3
 
 [[package]]
-name = "calculator"
+name = "my-little-eval"
 version = "0.1.0"

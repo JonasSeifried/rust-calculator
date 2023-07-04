@@ -29,7 +29,7 @@ impl Type {
     /// # Example
     ///
     /// ```
-    /// use calculator::type_enum::Type;
+    /// use my_little_eval::type_enum::Type;
     ///
     /// let int_type = Type::Int(42);
     /// let float_type = Type::Float(3.14);
