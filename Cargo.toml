@@ -1,6 +1,6 @@
 [package]
 name = "my-little-eval"
-version = "0.1.0"
+version = "0.1.1"
 authors = ["Jonas Seifried"]
 edition = "2021"
 description = "A little library for evaluating mathematical expressions"
